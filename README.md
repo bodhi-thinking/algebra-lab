@@ -17,8 +17,6 @@ The first three challenges are currently registered:
 2. **Even Steps** — 2, 4, 6, 8, …
 3. **Odd Steps** — 1, 3, 5, 7, …
 
-The challenge visual is owned by the challenge folder. This is intentional: future challenges can use completely different visual forms such as trees, triangles, matchsticks, geometric constructions, or animations without adding branches to a shared renderer.
-
 ## Project structure
 
 ```text
