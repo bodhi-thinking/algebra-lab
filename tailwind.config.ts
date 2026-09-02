@@ -1,44 +1,39 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  content: [
+        "./app/**/*.{ts,tsx}",
+        "./components/**/*.{ts,tsx}",
+        "./lib/**/*.{ts,tsx}",
+        "./challenges/**/*.{ts,tsx}",
+      ],
   theme: {
     extend: {
       colors: {
-        paper: "#F4F5F0",
-        panel: "#FDFDFB",
-        ink: "#1D2321",
-        "ink-soft": "#5B655E",
-        "ink-faint": "#8B948A",
-        line: "#DADFD6",
-        "line-soft": "#E7EAE2",
-        eqA: "#33528F",
-        "eqA-soft": "#E4E9F3",
-        eqB: "#AE4E30",
-        "eqB-soft": "#F4E6E0",
-        eqC: "#4C7A56",
-        "eqC-soft": "#E4EFE6",
-        chalk: "#C6852B",
-        "chalk-soft": "#F5E7D2",
+        paper: "#F7F7FB",
+        panel: "#FFFFFF",
+        ink: "#1F2430",
+        "ink-soft": "#5B6472",
+        "ink-faint": "#9AA3B2",
+        line: "#E4E7EF",
+        "line-soft": "#EFF1F7",
+        eqA: "#2F6FED",
+        "eqA-soft": "#E8F0FF",
+        eqB: "#E34B4B",
+        "eqB-soft": "#FDEAEA",
+        eqC: "#2E9B62",
+        "eqC-soft": "#E5F6EC",
+        chalk: "#E0972B",
+        "chalk-soft": "#FBEAD1",
+        primary: { DEFAULT: "#7C5CFC", soft: "#EDE9FE" },
+        secondary: { DEFAULT: "#10B981", soft: "#ECFDF5" },
       },
       fontFamily: {
-        display: ["var(--font-fraunces)", "serif"],
+        display: ["var(--font-baloo)", "sans-serif"],
         body: ["var(--font-plex-sans)", "sans-serif"],
         mono: ["var(--font-plex-mono)", "monospace"],
       },
-      borderRadius: {
-        sm: "3px",
-      },
-      boxShadow: {
-        panel: "0 1px 0 0 rgba(29,35,33,0.04)",
-      },
-      backgroundImage: {
-        "grid-faint":
-          "linear-gradient(to right, rgba(29,35,33,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(29,35,33,0.05) 1px, transparent 1px)",
-      },
-      backgroundSize: {
-        grid: "24px 24px",
-      },
+      boxShadow: { panel: "0 1px 2px 0 rgba(31,36,48,0.06)" },
     },
   },
   plugins: [],

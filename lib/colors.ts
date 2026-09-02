@@ -1,38 +1,36 @@
-export type EquationColorKey = "A" | "B" | "C";
-
-type ColorSet = {
-  stroke: string; // hex for SVG stroke/fill
-  text: string; // tailwind text class
-  bg: string; // tailwind bg class (soft)
-  ring: string; // tailwind ring/border class
-  dash: string | undefined; // SVG stroke-dasharray
+export type EquationColor = {
+  stroke: string;
+  bg: string;
+  text: string;
+  ring: string;
+  dash?: string;
 };
 
-const COLORS: Record<EquationColorKey, ColorSet> = {
+// A small, high-contrast palette inspired by graphing tools such as GeoGebra.
+// Keep the palette stable so an equation keeps the same identity across every representation.
+const COLORS: Record<string, EquationColor> = {
   A: {
-    stroke: "#33528F",
-    text: "text-eqA",
+    stroke: "#2F6FED",
     bg: "bg-eqA-soft",
+    text: "text-eqA",
     ring: "border-eqA",
-    dash: undefined,
   },
   B: {
-    stroke: "#AE4E30",
-    text: "text-eqB",
+    stroke: "#E34B4B",
     bg: "bg-eqB-soft",
+    text: "text-eqB",
     ring: "border-eqB",
-    dash: "6 4",
+    dash: "7 4",
   },
   C: {
-    stroke: "#4C7A56",
-    text: "text-eqC",
+    stroke: "#2E9B62",
     bg: "bg-eqC-soft",
+    text: "text-eqC",
     ring: "border-eqC",
-    dash: "1.5 4",
+    dash: "2 4",
   },
 };
 
-export function colorFor(label: string): ColorSet {
-  const key = (["A", "B", "C"].includes(label) ? label : "A") as EquationColorKey;
-  return COLORS[key];
+export function colorFor(label: string): EquationColor {
+  return COLORS[label] ?? COLORS.A;
 }

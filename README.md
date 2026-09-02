@@ -1,62 +1,94 @@
-# Algebra Lab — prototype
+# Algebra Lab
 
-One mathematical model. Four representations.
+A small interactive algebra-learning lab built around one shared mathematical model and four connected representations:
 
-This is the first development milestone from the spec: the interaction
-engine and challenge architecture, wired up to **one sample challenge**
-("Challenge 01 — Equal Jumps", `y = 3x + 2`). The challenge series itself
-is intentionally not built out yet — see `lib/challenges.ts`.
+- Number Line
+- Graph
+- Algebra Tiles
+- Equation
+
+The challenge provides the mathematical context and the Lab provides an independent space for changing parameters and comparing representations.
+
+## Challenge series
+
+The first three challenges are currently registered:
+
+1. **The Dot Trail** — 1, 2, 3, 4, …
+2. **Even Steps** — 2, 4, 6, 8, …
+3. **Odd Steps** — 1, 3, 5, 7, …
+
+The challenge visual is owned by the challenge folder. This is intentional: future challenges can use completely different visual forms such as trees, triangles, matchsticks, geometric constructions, or animations without adding branches to a shared renderer.
+
+## Project structure
+
+```text
+app/
+  page.tsx
+  layout.tsx
+  globals.css
+
+challenges/
+  _template/
+    challenge.ts
+    ChallengeVisual.tsx
+  001-dot-trail/
+    challenge.ts
+    ChallengeVisual.tsx
+    assets/
+  002-even-steps/
+    challenge.ts
+    ChallengeVisual.tsx
+  003-odd-steps/
+    challenge.ts
+    ChallengeVisual.tsx
+  index.ts
+
+components/
+  ChallengeCard.tsx
+  lab/
+    RepresentationGrid.tsx
+    NumberLine.tsx
+    AlgebraTiles.tsx
+    Graph.tsx
+    EquationPanel.tsx
+
+lib/
+  challenge-types.ts
+  lab-store.ts
+  colors.ts
+
+public/challenges/
+  001-dot-trail/assets/pattern.jpg   # reference asset
+```
+
+## Adding a challenge
+
+Create a self-contained folder under `challenges/<id>/` containing:
+
+- `challenge.ts` — challenge content and initial Lab state.
+- `ChallengeVisual.tsx` — all rendering specific to that challenge.
+- `assets/` — optional challenge-specific assets.
+
+Then add one import and one entry to `challenges/index.ts`.
+
+Do not put challenge-specific visual branches in `components/ChallengeCard.tsx` or `components/lab/`.
 
 ## Run locally
+
+The project is prepared for Node 20.9+ and npm 11.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open http://localhost:3000. (`npm run build` fetches Fraunces / IBM
-Plex Sans / IBM Plex Mono from Google Fonts at build time, so it needs
-network access — this works out of the box on Vercel.)
+Then open `http://localhost:3000`.
 
-## Deploy
+## Quality checks
 
-Push to a repo and import it in Vercel — no environment variables or
-backend needed for this version.
+```bash
+npm run typecheck
+npm run build
+```
 
-## Architecture
-
-- `lib/types.ts` — the shared math model (`EquationModel`, `LabState`,
-  `Challenge`) and pure functions (`valueAt`, `jumpSequence`,
-  `formatEquation`).
-- `lib/store.ts` — a single Zustand store. Every representation reads
-  from and writes to this store; nothing computes its own local copy of
-  the model. This is what makes "change one, watch the other three
-  update" work.
-- `lib/colors.ts` — equation identity (color + line-dash) shared by the
-  number line, graph, and equation panel so an equation looks the same
-  everywhere.
-- `lib/challenges.ts` — challenge data. Add more `Challenge` objects here
-  and they'll show up once you wire in a challenge switcher (not built
-  yet — out of scope for this milestone).
-- `components/` — the four representations (`NumberLine`, `Graph`,
-  `EquationPanel`, `AlgebraTiles`) plus `ChallengeHeader` for the prompt
-  and progressive hints. Each reads the active equation(s) straight from
-  the store.
-
-## What's deliberately not built yet
-
-Per the spec: accounts, backend, analytics, gamification, the full
-40-challenge progression, and the richer x²/xy/y² tile set. The
-`Challenge` type's `enabledRepresentations` flag already supports
-turning panels on/off per challenge, and `allowAddEquation` supports
-comparison challenges — the architecture is ready, the content isn't.
-
-## A note on the visual design
-
-Deliberately not the "AI worksheet" or "graphing calculator" look: paper
-background, a serif display face (Fraunces) for headings, monospace
-(IBM Plex Mono) for anything numeric so equations and coordinates read
-like a lab notebook rather than a UI. Equation identity is color *and*
-line-style (solid/dashed/dotted) together, never color alone. The
-number-line jump arcs are the signature element — they're what the
-whole "repeated jump" idea in the spec is actually about.
+The repository intentionally does not include `node_modules`, `.next`, macOS metadata, or a machine-generated `package-lock.json`. Run `npm install` once after extracting the project to generate a fresh lockfile for the current dependency set.
