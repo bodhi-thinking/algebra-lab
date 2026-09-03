@@ -6,10 +6,10 @@ export const challenge: PatternChallenge = {
   id: "odd-steps",
   title: "Odd Steps",
   seriesPosition: 3,
-  questionIntro: "Time to think bigger. The rule is steady: +2 blocks every step.",
+  questionIntro:"Time to think bigger. The rule is steady: +2 squares every step.",
   question:
-    "Can you skip ahead and calculate the blocks for Step 20?",
-  answer: 199,
+    "Can you skip ahead and calculate the squares for Step 20?",
+  answer: 39,
   hints: [
     {
       id: "h1",
@@ -21,14 +21,14 @@ export const challenge: PatternChallenge = {
     },
     {
       id: "h3",
-      text: "The pattern is 1, 3, 5, 7, 9, … What comes at Step 100?",
+      text: "The pattern is 1, 3, 5, 7, 9, … What comes at Step 20?",
     },
   ],
   tags: [
     { label: "Square pattern", tone: "purple" },
     { label: "Growing by 2", tone: "green" },
   ],
-  correctFeedback: "Yes. Step 100 has 199 squares.",
+  correctFeedback: "Yes. Step 20 has 39 squares.",
   followUpPrompt:
     "Both patterns grow by 2. So what makes them different?",
   visual: OddStepsVisual,
@@ -46,6 +46,9 @@ export const challenge: PatternChallenge = {
         label: "A",
         variable: "x",
         outputVariable: "y",
+        cubic: 0,
+        quadratic: 0,
+        editableDegree: 1,
         coefficient: 2,
         constant: -1,
         visible: true,

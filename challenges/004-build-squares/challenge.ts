@@ -6,9 +6,9 @@ export const challenge: PatternChallenge = {
   id: "build-squares",
   title: "Build Squares",
   seriesPosition: 4,
-  questionIntro:
-    "The odd numbers have a hidden superpower: they build perfect squares! (like how Step 2 uses exactly 4 blocks, Step 3 - 9 blocks)",
-  question: "If you keep stacking them, how many blocks will you need for Step 8?",
+  questionIntro:"The odd numbers have a hidden superpower: they build perfect squares!",
+  question:
+    "If you keep stacking them, how many blocks will there be in Step 8?",
   answer: 64,
   hints: [
     {
@@ -24,13 +24,13 @@ export const challenge: PatternChallenge = {
       text: "The square sizes are 1 × 1, 2 × 2, 3 × 3, 4 × 4... What happens at Step 8?",
     },
   ],
-  correctFeedback:
-    "Yes. The odd numbers build larger and larger squares. Step 8 makes a 8 × 8 square, so there are 64 squares.",
-  followUpPrompt: "What do you notice about 1, 4, 9, 16, …?",
   tags: [
-  { label: "Odd numbers", tone: "purple" },
-  { label: "Square pattern", tone: "green" },
-],
+    { label: "Odd numbers", tone: "purple" },
+    { label: "Square pattern", tone: "green" },
+  ],
+  correctFeedback:
+    "Yes. The odd numbers build larger and larger squares. Step 8 makes a 8 × 8 square, so there are 64 blocks.",
+  followUpPrompt: "How many types of triangles could be formed by rearranging the blocks of these squares?",
   visual: BuildSquaresVisual,
   enabledRepresentations: {
     numberLine: true,
@@ -46,7 +46,10 @@ export const challenge: PatternChallenge = {
         label: "A",
         variable: "x",
         outputVariable: "y",
-        coefficient: 1,
+        cubic: 0,
+        quadratic: 1,
+        editableDegree: 2,
+        coefficient: 0,
         constant: 0,
         visible: true,
       },
@@ -55,6 +58,9 @@ export const challenge: PatternChallenge = {
     inputStart: 1,
     inputCount: 6,
     selectedInput: null,
-    numberLineRange: { min: 0, max: 12 },
+    numberLineRange: { min: 0, max: 50 },
+    numberLineDivision: 5,
+    graphXRange: { min: 1, max: 7 },
+    graphXDivision: 1,
   },
 };

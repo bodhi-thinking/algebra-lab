@@ -6,7 +6,7 @@ export const challenge: PatternChallenge = {
   id: "dot-trail",
   title: "The Dot Trail",
   seriesPosition: 1,
-  questionIntro: "Let’s warm up those brain cells! This one’s an easy starter:",
+  questionIntro:"Let’s warm up those brain cells! This one’s an easy starter:",
   question: "If the pattern continues, how many dots will there be at Step 10?",
   answer: 10,
   hints: [
@@ -35,6 +35,9 @@ export const challenge: PatternChallenge = {
         label: "A",
         variable: "x",
         outputVariable: "y",
+        cubic: 0,
+        quadratic: 0,
+        editableDegree: 1,
         coefficient: 1,
         constant: 0,
         visible: true,

@@ -8,4 +8,4 @@ import { challenge as buildSquares } from "@/challenges/004-build-squares/challe
 export const CHALLENGE_SERIES_TOTAL = 10;
 
 /** Registered challenges available in the current build. */
-export const challenges: Challenge[] = [dotTrail, evenSteps, oddSteps, buildSquares,];
+export const challenges: Challenge[] = [dotTrail, evenSteps, oddSteps, buildSquares];

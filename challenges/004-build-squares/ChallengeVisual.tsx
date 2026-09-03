@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ChallengeVisualProps } from "@/lib/challenge-types";
 
-// Same palette/order as Challenge 3.
 const STEP_COLORS = [
   { main: "#F5B82E", center: "#D99600" },
   { main: "#42B883", center: "#23845A" },
@@ -11,48 +10,17 @@ const STEP_COLORS = [
 
 const ODD_NUMBERS = [1, 3, 5, 7];
 
-function Arrow({ direction }: { direction: "down" | "right" }) {
-  // Deliberately the same visual size and stroke treatment for both arrows.
-  if (direction === "down") {
-    return (
-      <svg
-        className="h-6 w-6"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
-        <path
-          d="M12 3V17"
-          stroke="#B8B8B8"
-          strokeWidth="2"
-          strokeDasharray="4 4"
-        />
-        <path
-          d="M7 14L12 20L17 14"
-          stroke="#B8B8B8"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-
+function Arrow() {
   return (
-    <svg
-      className="h-6 w-6"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
+    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
-        d="M3 12H17"
+        d="M12 3V17"
         stroke="#B8B8B8"
         strokeWidth="2"
         strokeDasharray="4 4"
       />
       <path
-        d="M14 7L20 12L14 17"
+        d="M7 14L12 20L17 14"
         stroke="#B8B8B8"
         strokeWidth="2"
         strokeLinecap="round"
@@ -71,9 +39,7 @@ function LShape({ size, compact = false }: { size: number; compact?: boolean }) 
   for (let row = 0; row < size; row += 1) {
     for (let column = 0; column < size; column += 1) {
       if (row !== 0 && column !== 0) continue;
-
       const isCorner = row === 0 && column === 0;
-
       cells.push(
         <span
           key={`${row}-${column}`}
@@ -116,7 +82,6 @@ function Square({ size, compact = false }: { size: number; compact?: boolean }) 
         0,
         Math.min(size - Math.min(row, column) - 1, STEP_COLORS.length - 1)
       );
-
       const color = STEP_COLORS[layer];
       const isOuterCorner = row === 0 && column === 0;
 
@@ -152,50 +117,39 @@ function Square({ size, compact = false }: { size: number; compact?: boolean }) 
   );
 }
 
-function TopLShapes({ stage }: { stage: number }) {
+function TopLShapes() {
   return (
     <div className="grid grid-cols-4 items-start gap-1 sm:flex sm:items-start sm:justify-center sm:gap-3 md:gap-5">
-      {ODD_NUMBERS.map((number, index) => {
-        const visibleArrow = index < 3 && index < stage;
-
-        return (
-          <div key={number} className="flex min-w-0 items-start justify-center sm:flex-1">
-            <div className="flex min-w-0 flex-col items-center gap-1.5 sm:gap-2">
-              <div className="flex h-[62px] items-end justify-center sm:h-[82px]">
-                <div className="sm:hidden">
-                  <LShape size={index + 1} compact />
-                </div>
-                <div className="hidden sm:block">
-                  <LShape size={index + 1} />
-                </div>
+      {ODD_NUMBERS.map((number, index) => (
+        <div key={number} className="flex min-w-0 items-start justify-center sm:flex-1">
+          <div className="flex min-w-0 flex-col items-center gap-1.5 sm:gap-2">
+            <div className="flex h-[62px] items-end justify-center sm:h-[82px]">
+              <div className="sm:hidden">
+                <LShape size={index + 1} compact />
               </div>
-              <span
-                className="font-mono text-[11px] font-semibold sm:text-sm"
-                style={{ color: STEP_COLORS[index].main }}
-              >
-                {number}
-              </span>
+              <div className="hidden sm:block">
+                <LShape size={index + 1} />
+              </div>
             </div>
-
-           {/*  {visibleArrow && (
-              <div className="hidden shrink-0 self-center sm:block sm:ml-1">
-                <Arrow direction="right" />
-              </div>
-            )} */}
+            <span
+              className="font-mono text-[11px] font-semibold sm:text-sm"
+              style={{ color: STEP_COLORS[index].main }}
+            >
+              {number}
+            </span>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }
 
 function DownArrows({ stage }: { stage: number }) {
-  // Only 3, 5 and 7 have a downward connection to a newly built square.
   return (
     <div className="grid grid-cols-4 gap-1 sm:flex sm:justify-center sm:gap-3 md:gap-5">
       {ODD_NUMBERS.map((number, index) => (
         <div key={number} className="flex h-8 items-center justify-center sm:flex-1">
-          {index > 0 && index <= stage && <Arrow direction="down" />}
+          {index > 0 && index <= stage && <Arrow />}
         </div>
       ))}
     </div>
@@ -207,8 +161,6 @@ function BuildRow({ stage }: { stage: number }) {
     <div className="relative grid grid-cols-4 gap-1 sm:flex sm:justify-center sm:gap-3 md:gap-5">
       {ODD_NUMBERS.map((number, index) => {
         const visible = index <= stage;
-        const showRightArrow = index < 3 && index < stage;
-
         return (
           <div key={number} className="relative flex min-w-0 items-start justify-center sm:flex-1">
             <div
@@ -228,22 +180,13 @@ function BuildRow({ stage }: { stage: number }) {
                   </>
                 )}
               </div>
-
               <span
                 className="font-mono text-[11px] font-semibold sm:text-sm"
-                style={{
-                  color: visible ? STEP_COLORS[index].main : "transparent",
-                }}
+                style={{ color: visible ? STEP_COLORS[index].main : "transparent" }}
               >
                 {(index + 1) * (index + 1)}
               </span>
             </div>
-
-            {/* {showRightArrow && (
-              <div className="absolute left-[calc(100%_-_2px)] top-7 z-10 sm:left-[calc(100%_-_3px)] sm:top-9">
-                <Arrow direction="right" />
-              </div>
-            )} */}
           </div>
         );
       })}
@@ -259,7 +202,6 @@ export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
     const timer = window.setInterval(() => {
       setStage((current) => (current + 1) % stageCount);
     }, 2400);
-
     return () => window.clearInterval(timer);
   }, []);
 
@@ -274,7 +216,7 @@ export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
         </p>
 
         <div className="mx-auto w-full max-w-[760px]">
-          <TopLShapes stage={stage} />
+          <TopLShapes />
           <div className="mt-2 sm:mt-3">
             <DownArrows stage={stage} />
           </div>
@@ -283,29 +225,23 @@ export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
           </div>
 
           <div className="mt-3 grid grid-cols-4 gap-1 sm:mt-4 sm:gap-3 md:gap-5">
-  {ODD_NUMBERS.map((_, index) => (
-    <div
-      key={index}
-      className="flex justify-center sm:flex-1"
-    >
-      <span
-        className="flex h-4 w-4 items-center justify-center rounded-full font-mono text-xs font-semibold text-black sm:h-9 sm:w-9"
-        style={{
-          backgroundColor: STEP_COLORS[index].main,
-        }}
-      >
-        {index + 1}
-      </span>
-    </div>
-  ))}
-</div>
+            {ODD_NUMBERS.map((_, index) => (
+              <div key={index} className="flex justify-center sm:flex-1">
+                <span
+                  className="flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs font-semibold text-black sm:h-9 sm:w-9"
+                  style={{ backgroundColor: STEP_COLORS[index].main }}
+                >
+                  {index + 1}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="mt-5 flex items-center justify-center gap-2.5">
           {Array.from({ length: stageCount }, (_, index) => {
             const active = stage === index;
             const color = STEP_COLORS[index].main;
-
             return (
               <button
                 key={index}

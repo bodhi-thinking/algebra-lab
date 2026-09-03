@@ -9,6 +9,10 @@ export type Equation = {
   label: string;
   variable: string;
   outputVariable: string;
+  cubic: number;
+  quadratic: number;
+  /** Highest-order term exposed in the Equation editor (1, 2, or 3). */
+  editableDegree: 1 | 2 | 3;
   coefficient: number;
   constant: number;
   visible: boolean;
@@ -22,6 +26,9 @@ export type LabState = {
   inputCount: number;
   selectedInput: number | null;
   numberLineRange: { min: number; max: number };
+  numberLineDivision?: number;
+  graphXRange?: { min: number; max: number };
+  graphXDivision?: number;
 };
 
 export type InitialState = LabState;
@@ -51,8 +58,8 @@ export type BaseChallenge = {
   id: string;
   title: string;
   seriesPosition: number;
-  question: string;
   questionIntro?: string;
+  question: string;
   answer: number;
   hints: Hint[];
   correctFeedback: string;
@@ -85,8 +92,14 @@ export function checkAnswer(correct: number, raw: string): boolean {
   return Number.isFinite(parsed) && parsed === correct;
 }
 
+/** Evaluate the shared polynomial model: y = ax³ + bx² + cx + d. */
 export function valueAt(eq: Equation, input: number): number {
-  return eq.coefficient * input + eq.constant;
+  return (
+    eq.cubic * input ** 3 +
+    eq.quadratic * input ** 2 +
+    eq.coefficient * input +
+    eq.constant
+  );
 }
 
 export function sequenceValues(
@@ -102,4 +115,12 @@ export function sequenceValues(
   return Array.from({ length: safeCount }, (_, i) =>
     valueAt(eq, safeStart + i)
   );
+}
+
+/** Highest non-zero polynomial degree currently represented by an equation. */
+export function equationDegree(eq: Equation): 0 | 1 | 2 | 3 {
+  if (eq.cubic !== 0) return 3;
+  if (eq.quadratic !== 0) return 2;
+  if (eq.coefficient !== 0) return 1;
+  return 0;
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import { useLabStore } from "@/lib/lab-store";
-import { sequenceValues, valueAt } from "@/lib/challenge-types";
+import { equationDegree, sequenceValues, valueAt } from "@/lib/challenge-types";
 import { colorFor } from "@/lib/colors";
 
 const WIDTH = 880;
@@ -27,10 +27,19 @@ export default function NumberLine() {
 
   const range = useLabStore((s) => s.numberLineRange);
   const setRange = useLabStore((s) => s.setNumberLineRange);
+  const division = useLabStore((s) => s.numberLineDivision);
+  const setDivision = useLabStore((s) => s.setNumberLineDivision);
 
   const setCoefficient = useLabStore((s) => s.setCoefficient);
 
   const selectedOrStart = selectedInput ?? inputStart;
+  const [highlightDraft, setHighlightDraft] = useState(
+    selectedInput === null ? "" : String(selectedInput)
+  );
+
+  useEffect(() => {
+    setHighlightDraft(selectedInput === null ? "" : String(selectedInput));
+  }, [selectedInput]);
 
   const visibleEquations = equations.filter((eq) => eq.visible);
   const active = equations.find((eq) => eq.id === activeEquationId);
@@ -58,25 +67,22 @@ export default function NumberLine() {
   const lineY = height - BASE_PAD_BOTTOM;
   const innerWidth = WIDTH - SIDE_PAD * 2;
 
-  const scaleX = (value: number) =>
-    SIDE_PAD +
-    ((value - range.min) / (range.max - range.min)) * innerWidth;
+  const scaleX = (value: number) => {
+    const ratio = (value - range.min) / (range.max - range.min);
+    const clamped = Math.max(0, Math.min(1, ratio));
+    return SIDE_PAD + clamped * innerWidth;
+  };
 
   const tickStep = useMemo(() => {
     const span = range.max - range.min;
-
-    if (span <= 12) return 1;
-    if (span <= 30) return 2;
-    if (span <= 60) return 5;
-
-    return 10;
-  }, [range]);
+    return Math.max(division, Math.ceil(span / 120) * division);
+  }, [range, division]);
 
   const ticks = useMemo(() => {
     const arr: number[] = [];
     const start = Math.ceil(range.min / tickStep) * tickStep;
 
-    for (let v = start; v <= range.max; v += tickStep) {
+    for (let v = start; v <= range.max && arr.length < 140; v += tickStep) {
       arr.push(v);
     }
 
@@ -278,24 +284,24 @@ export default function NumberLine() {
             onChange={setInputStart}
           />
 
-          {/* Change */}
-          <NumberField
-            label="Change by"
-            value={active.coefficient}
-            min={-100}
-            max={100}
-            onChange={(v) =>
-              setCoefficient(active.id, v)
-            }
-            colorLabel={active.label}
-          />
+          {/* A single change value only describes a linear rule. */}
+          {equationDegree(active) <= 1 && (
+            <NumberField
+              label="Change by"
+              value={active.coefficient}
+              min={-100}
+              max={100}
+              onChange={(v) => setCoefficient(active.id, v)}
+              colorLabel={active.label}
+            />
+          )}
 
           {/* Jumps */}
           <NumberField
             label="Jumps"
             value={inputCount}
             min={1}
-            max={20}
+            max={100}
             onChange={(v) =>
               setInputCount(Math.round(v))
             }
@@ -327,11 +333,33 @@ export default function NumberLine() {
                     &minus;
                   </button>
 
-                  <span className="w-20 text-center font-mono text-sm text-ink">
-                    {selectedInput === null
-                      ? "none"
-                      : selectedInput}
-                  </span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    value={highlightDraft}
+                    min={firstNumber}
+                    max={lastNumber}
+                    placeholder="none"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      const raw = e.target.value;
+                      setHighlightDraft(raw);
+                      if (raw === "") {
+                        setSelectedInput(null);
+                        return;
+                      }
+                      const value = Number(raw);
+                      if (Number.isFinite(value)) {
+                        setSelectedInput(
+                          Math.max(firstNumber, Math.min(lastNumber, Math.round(value)))
+                        );
+                      }
+                    }}
+                    onBlur={() => {
+                      if (highlightDraft === "") setSelectedInput(null);
+                    }}
+                    className="w-20 rounded-lg border border-line bg-paper px-1.5 py-1 text-center font-mono text-sm text-ink focus:outline-none focus:ring-2 focus:ring-chalk"
+                    aria-label="Highlighted input"
+                  />
 
                   <button
                     type="button"
@@ -405,18 +433,15 @@ export default function NumberLine() {
         </div>
       )}
 
-      {/* Visible range */}
-      <div className="mt-3 flex items-center gap-3 text-[11px] text-ink-faint">
+      {/* Visible range + divisions */}
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-ink-faint">
         <span>Visible range</span>
 
         <input
           type="number"
           value={range.min}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setRange(
-              Number(e.target.value),
-              range.max
-            )
+            setRange(Number(e.target.value), range.max)
           }
           className="w-16 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
           aria-label="Number line minimum"
@@ -428,13 +453,24 @@ export default function NumberLine() {
           type="number"
           value={range.max}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setRange(
-              range.min,
-              Number(e.target.value)
-            )
+            setRange(range.min, Number(e.target.value))
           }
           className="w-16 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
           aria-label="Number line maximum"
+        />
+
+        <span>Divisions</span>
+
+        <input
+          type="number"
+          min={1}
+          max={50}
+          value={division}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setDivision(Number(e.target.value))
+          }
+          className="w-14 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
+          aria-label="Number line divisions"
         />
       </div>
     </div>

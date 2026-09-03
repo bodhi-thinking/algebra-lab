@@ -27,20 +27,11 @@ export default function ChallengeCard({
   const [inputValue, setInputValue] = useState("");
   const [status, setStatus] = useState<Status>("unanswered");
 
-  /*
-   * Reset learner interaction when the challenge changes.
-   *
-   * The initial state is deterministic on both server and client,
-   * so there is no hydration-specific branching here.
-   */
   useEffect(() => {
     setHintsShown(0);
     setInputValue("");
     setStatus("unanswered");
   }, [challenge.id]);
-
-  const hasAnswer = inputValue.trim().length > 0;
-  const canCheckAnswer = status !== "correct" && hasAnswer;
 
   const showNextHint = () => {
     setHintsShown((current) =>
@@ -53,28 +44,20 @@ export default function ChallengeCard({
   };
 
   const handleCheck = () => {
-    const answer = inputValue.trim();
+    if (!inputValue.trim()) return;
 
-    if (!answer) {
-      return;
-    }
-
-    const correct = checkAnswer(challenge.answer, answer);
-
-    setStatus(correct ? "correct" : "incorrect");
+    setStatus(
+      checkAnswer(challenge.answer, inputValue)
+        ? "correct"
+        : "incorrect"
+    );
   };
 
-  const ChallengeVisual =
-    challenge.challengeType === "pattern"
-      ? challenge.visual
-      : null;
+  const ChallengeVisual = challenge.challengeType === "pattern" ? challenge.visual : null;
 
   return (
-    <section
-      className="overflow-hidden rounded-2xl border border-line bg-panel shadow-panel"
-      aria-labelledby="challenge-title"
-    >
-      {/* Row 1: title + navigation */}
+    <section className="overflow-hidden rounded-2xl border border-line bg-panel shadow-panel">
+      {/* Row 1: title tab + navigation */}
       <header className="flex min-h-14 flex-wrap items-center gap-2.5 border-b border-line-soft px-4 py-3 sm:px-5 md:px-6">
         <span
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-soft"
@@ -107,10 +90,7 @@ export default function ChallengeCard({
           </svg>
         </span>
 
-        <span
-          id="challenge-title"
-          className="font-display text-lg text-ink sm:text-xl"
-        >
+        <span className="font-display text-lg text-ink sm:text-xl">
           {challenge.title}
         </span>
 
@@ -126,7 +106,7 @@ export default function ChallengeCard({
             onClick={onPrevious}
             disabled={!canPrevious}
             aria-label="Previous challenge"
-            className="flex min-h-10 min-w-10 items-center justify-center rounded-full border border-line text-ink-soft transition-colors hover:border-ink-soft hover:text-ink disabled:cursor-not-allowed disabled:opacity-35"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-line text-ink-soft transition-colors hover:border-ink-soft hover:text-ink disabled:cursor-not-allowed disabled:opacity-35"
           >
             ←
           </button>
@@ -136,7 +116,7 @@ export default function ChallengeCard({
             onClick={onNext}
             disabled={!canNext}
             aria-label="Next challenge"
-            className="flex min-h-10 min-w-10 items-center justify-center rounded-full border border-line text-ink-soft transition-colors hover:border-ink-soft hover:text-ink disabled:cursor-not-allowed disabled:opacity-35"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-line text-ink-soft transition-colors hover:border-ink-soft hover:text-ink disabled:cursor-not-allowed disabled:opacity-35"
           >
             →
           </button>
@@ -144,89 +124,73 @@ export default function ChallengeCard({
       </header>
 
       {/* Row 2: challenge-owned visual */}
-      {ChallengeVisual && (
-        <div className="border-b border-line-soft bg-pattern-surface px-2.5 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4">
-          <ChallengeVisual challenge={challenge} />
-        </div>
-      )}
+      <div className="border-b border-line-soft bg-pattern-surface px-2.5 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4">
+        {ChallengeVisual && <ChallengeVisual challenge={challenge} />}
+      </div>
 
       {/* Row 3: question */}
       <div className="px-4 pt-4 sm:px-5 md:px-6 md:pt-5">
-        <p className="max-w-none font-display text-sm leading-snug text-ink sm:text-xl">
+        <p className="max-w-none font-display text-lg leading-snug text-ink sm:text-xl">
           {challenge.questionIntro && (
-            <>
-              <span>{challenge.questionIntro}</span>
-              <br />
-            </>
-          )}
-
-          <strong>{challenge.question}</strong>
+  <>
+    <span>{challenge.questionIntro}</span>
+    <br />
+  </>
+)}
+<strong>{challenge.question}</strong>
         </p>
       </div>
 
-      {/* Row 4: answer + actions */}
+      {/* Row 4: answer + hint */}
       <div className="px-4 pb-4 pt-3 sm:px-5 md:px-6 md:pb-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <input
             type="text"
             inputMode="numeric"
             value={inputValue}
-            onChange={(event) => {
-              const nextValue = event.target.value.slice(0, 20);
-
-              setInputValue(nextValue);
+            onChange={(e) => {
+              setInputValue(e.target.value.slice(0, 20));
 
               if (status !== "unanswered") {
                 setStatus("unanswered");
               }
             }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && canCheckAnswer) {
-                event.preventDefault();
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
                 handleCheck();
               }
             }}
             placeholder="Type your answer..."
             maxLength={20}
             aria-label="Your answer"
-            aria-describedby="answer-help"
             className="w-full rounded-xl border border-line bg-paper px-3.5 py-2.5 text-sm text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:w-56"
           />
 
-          <span id="answer-help" className="sr-only">
-            Enter your answer and select Check answer.
-          </span>
-
           <div className="flex flex-wrap gap-2.5">
-            {/* Check answer */}
             {status !== "correct" && (
               <button
                 type="button"
                 onClick={handleCheck}
-                disabled={!hasAnswer}
+                disabled={!inputValue.trim()}
                 className="min-h-11 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-35"
               >
                 Check answer
               </button>
             )}
 
-            {/* Hints */}
-            {status !== "correct" &&
-              hintsShown < challenge.hints.length && (
-                <button
-                  type="button"
-                  onClick={showNextHint}
-                  aria-expanded={hintsShown > 0}
-                  aria-controls="challenge-hints"
-                  className="min-h-11 rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-medium text-ink-soft transition hover:border-primary hover:text-ink"
-                >
-                  {hintsShown === 0
-                    ? "Need a hint?"
-                    : "Another hint"}
-                </button>
-              )}
+            {status !== "correct" && hintsShown < challenge.hints.length && (
+              <button
+                type="button"
+                onClick={showNextHint}
+                aria-expanded={hintsShown > 0}
+                className="min-h-11 rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-medium text-ink-soft transition hover:border-primary hover:text-ink"
+              >
+                {hintsShown === 0
+                  ? "Need a hint?"
+                  : "Another hint"}
+              </button>
+            )}
 
-            {/* Contextual next action */}
             {status === "correct" && canNext && (
               <button
                 type="button"
@@ -242,7 +206,6 @@ export default function ChallengeCard({
         {/* Hints */}
         {hintsShown > 0 && status !== "correct" && (
           <div
-            id="challenge-hints"
             className="mt-3 rounded-xl bg-chalk-soft px-4 py-3"
             role="status"
             aria-live="polite"
@@ -258,10 +221,7 @@ export default function ChallengeCard({
                     Hint {index + 1}
                   </span>
 
-                  <span
-                    className="mx-2 text-ink-faint"
-                    aria-hidden="true"
-                  >
+                  <span className="mx-2 text-ink-faint">
                     ·
                   </span>
 
@@ -271,7 +231,7 @@ export default function ChallengeCard({
           </div>
         )}
 
-        {/* Correct answer */}
+        {/* Correct answer + next action */}
         {status === "correct" && (
           <div
             className="mt-3 rounded-xl bg-eqC-soft px-4 py-3"

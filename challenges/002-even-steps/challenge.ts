@@ -6,9 +6,9 @@ export const challenge: PatternChallenge = {
   id: "even-steps",
   title: "Even Steps",
   seriesPosition: 2,
-  questionIntro: "You spotted that first one easily, but let's change things up.",
+  questionIntro:"You cracked the first code, but the rules just changed.",
   question:
-    "What’s your prediction for Step 10?",
+    "What’s your prediction for the 10th step?",
   answer: 20,
   hints: [
     {
@@ -46,6 +46,9 @@ export const challenge: PatternChallenge = {
         label: "A",
         variable: "x",
         outputVariable: "y",
+        cubic: 0,
+        quadratic: 0,
+        editableDegree: 1,
         coefficient: 2,
         constant: 0,
         visible: true,
