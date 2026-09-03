@@ -6,9 +6,9 @@ export const challenge: PatternChallenge = {
   id: "odd-steps",
   title: "Odd Steps",
   seriesPosition: 3,
-  questionIntro: "Time to think bigger. The rule is steady: +2 squares every step.",
+  questionIntro: "Time to think bigger. The rule is steady: +2 blocks every step.",
   question:
-    "Can you skip ahead and calculate the squares for Step 20?",
+    "Can you skip ahead and calculate the blocks for Step 20?",
   answer: 199,
   hints: [
     {

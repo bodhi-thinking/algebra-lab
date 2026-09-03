@@ -77,7 +77,7 @@ export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
                     <span
                       key={cell}
                       aria-hidden="true"
-                      className="rounded-[6px] bg-primary shadow-sm"
+                      className="rounded-[14px] bg-primary shadow-sm"
                       style={{
                         width: CELL_SIZE_DESKTOP,
                         height: CELL_SIZE_DESKTOP,

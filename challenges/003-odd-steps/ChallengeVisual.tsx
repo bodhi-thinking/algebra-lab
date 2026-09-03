@@ -100,7 +100,7 @@ export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
               >
                 {renderLShape(step, CELL_SIZE_DESKTOP)}
 
-                <span className="flex h-12 w-12 items-center justify-center rounded-full font-mono text-2xl font-semibold text-black" style={{ backgroundColor: STEP_COLORS[(step - 1) % STEP_COLORS.length].main }}>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full font-mono text-1xl font-semibold text-black" style={{ backgroundColor: STEP_COLORS[(step - 1) % STEP_COLORS.length].main }}>
                   {step}
                 </span>
               </div>
