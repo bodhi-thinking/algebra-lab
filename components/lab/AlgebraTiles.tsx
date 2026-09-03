@@ -114,7 +114,7 @@ export default function AlgebraTiles() {
           </div>
 
           <p className="mb-2 mt-4 font-mono text-[11px] tracking-wide text-ink-faint">
-            then, each value adds
+            then, each level adds
           </p>
 
           <div className="flex flex-col gap-2">

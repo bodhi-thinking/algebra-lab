@@ -6,7 +6,8 @@ export const challenge: PatternChallenge = {
   id: "dot-trail",
   title: "The Dot Trail",
   seriesPosition: 1,
-  question: "Let’s start with an easy one. If the pattern continues, how many dots will there be at Step 10?",
+  questionIntro: "Let’s warm up those brain cells! This one’s an easy starter:",
+  question: "If the pattern continues, how many dots will there be at Step 10?",
   answer: 10,
   hints: [
     { id: "h1", text: "Look at what changes from one step to the next." },

@@ -53,7 +53,10 @@ export default function ChallengeCard({
     );
   };
 
-  const ChallengeVisual = challenge.visual;
+  const ChallengeVisual =
+  challenge.challengeType === "pattern"
+    ? challenge.visual
+    : null;
 
   return (
     <section className="overflow-hidden rounded-2xl border border-line bg-panel shadow-panel">
@@ -124,14 +127,19 @@ export default function ChallengeCard({
       </header>
 
       {/* Row 2: challenge-owned visual */}
-      <div className="border-b border-line-soft bg-pattern-surface px-2.5 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4">
-        <ChallengeVisual challenge={challenge} />
-      </div>
+      {ChallengeVisual && (
+  <div className="border-b border-line-soft bg-pattern-surface px-2.5 py-2.5 sm:px-4 sm:py-3 md:px-5 md:py-4">
+    <ChallengeVisual challenge={challenge} />
+  </div>
+)}
 
       {/* Row 3: question */}
       <div className="px-4 pt-4 sm:px-5 md:px-6 md:pt-5">
         <p className="max-w-none font-display text-lg leading-snug text-ink sm:text-xl">
-          {challenge.question}
+          {challenge.questionIntro && (
+            <span>{challenge.questionIntro} </span>
+        )}
+        <strong>{challenge.question}</strong>
         </p>
       </div>
 
@@ -161,25 +169,37 @@ export default function ChallengeCard({
           />
 
           <div className="flex flex-wrap gap-2.5">
-            <button
-              type="button"
-              onClick={handleCheck}
-              disabled={!inputValue.trim()}
-              className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              Check answer
-            </button>
+            {status !== "correct" && (
+              <button
+                type="button"
+                onClick={handleCheck}
+                disabled={!inputValue.trim()}
+                className="min-h-11 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                Check answer
+              </button>
+            )}
 
-            {hintsShown < challenge.hints.length && (
+            {status !== "correct" && hintsShown < challenge.hints.length && (
               <button
                 type="button"
                 onClick={showNextHint}
                 aria-expanded={hintsShown > 0}
-                className="rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-medium text-ink-soft transition hover:border-primary hover:text-ink"
+                className="min-h-11 rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-medium text-ink-soft transition hover:border-primary hover:text-ink"
               >
                 {hintsShown === 0
                   ? "Need a hint?"
                   : "Another hint"}
+              </button>
+            )}
+
+            {status === "correct" && canNext && (
+              <button
+                type="button"
+                onClick={onNext}
+                className="min-h-11 w-full rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 sm:w-auto"
+              >
+                Next challenge →
               </button>
             )}
           </div>
@@ -213,7 +233,7 @@ export default function ChallengeCard({
           </div>
         )}
 
-        {/* Correct answer */}
+        {/* Correct answer + next action */}
         {status === "correct" && (
           <div
             className="mt-3 rounded-xl bg-eqC-soft px-4 py-3"

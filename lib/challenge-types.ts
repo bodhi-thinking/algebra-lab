@@ -52,6 +52,7 @@ export type BaseChallenge = {
   title: string;
   seriesPosition: number;
   question: string;
+  questionIntro: string;
   answer: number;
   hints: Hint[];
   correctFeedback: string;
@@ -60,9 +61,6 @@ export type BaseChallenge = {
   enabledRepresentations: Record<PanelKey, boolean>;
   allowAddEquation: boolean;
   initialState: InitialState;
-
-  // Every challenge owns its visual
-  visual: ChallengeVisualComponent;
 };
 
 export type PatternChallenge = BaseChallenge & {

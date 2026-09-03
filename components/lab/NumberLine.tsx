@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 import { useLabStore } from "@/lib/lab-store";
 import { sequenceValues, valueAt } from "@/lib/challenge-types";
@@ -406,97 +406,38 @@ export default function NumberLine() {
       )}
 
       {/* Visible range */}
-      <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-ink-faint">
+      <div className="mt-3 flex items-center gap-3 text-[11px] text-ink-faint">
         <span>Visible range</span>
 
-        <RangeField
+        <input
+          type="number"
           value={range.min}
-          fallback={0}
-          onCommit={(value) =>
-            setRange(value, range.max)
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setRange(
+              Number(e.target.value),
+              range.max
+            )
           }
-          ariaLabel="Number line minimum"
+          className="w-16 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
+          aria-label="Number line minimum"
         />
 
         <span>to</span>
 
-        <RangeField
+        <input
+          type="number"
           value={range.max}
-          fallback={10}
-          onCommit={(value) =>
-            setRange(range.min, value)
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setRange(
+              range.min,
+              Number(e.target.value)
+            )
           }
-          ariaLabel="Number line maximum"
+          className="w-16 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
+          aria-label="Number line maximum"
         />
       </div>
     </div>
-  );
-}
-
-function RangeField({
-  value,
-  fallback,
-  onCommit,
-  ariaLabel,
-}: {
-  value: number;
-  fallback: number;
-  onCommit: (value: number) => void;
-  ariaLabel: string;
-}) {
-  const [draft, setDraft] = useState(String(value));
-
-  useEffect(() => {
-    setDraft(String(value));
-  }, [value]);
-
-  const commit = () => {
-    const trimmed = draft.trim();
-
-    /*
-     * Allow the learner to completely clear the field while editing.
-     * Only restore the fallback once editing is finished.
-     */
-    if (trimmed === "") {
-      onCommit(fallback);
-      setDraft(String(fallback));
-      return;
-    }
-
-    const parsed = Number(trimmed);
-
-    /*
-     * If the entered value is not a valid number,
-     * restore the last valid value.
-     */
-    if (!Number.isFinite(parsed)) {
-      setDraft(String(value));
-      return;
-    }
-
-    const next = Math.round(parsed);
-
-    onCommit(next);
-    setDraft(String(next));
-  };
-
-  return (
-    <input
-      type="number"
-      inputMode="numeric"
-      value={draft}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-        setDraft(e.target.value);
-      }}
-      onBlur={commit}
-      onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          e.currentTarget.blur();
-        }
-      }}
-      className="min-h-11 w-16 rounded-lg border border-line bg-paper px-2 py-1.5 font-mono text-base text-ink focus:outline-none focus:ring-2 focus:ring-chalk"
-      aria-label={ariaLabel}
-    />
   );
 }
 

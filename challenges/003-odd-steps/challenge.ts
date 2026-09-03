@@ -6,8 +6,9 @@ export const challenge: PatternChallenge = {
   id: "odd-steps",
   title: "Odd Steps",
   seriesPosition: 3,
+  questionIntro: "Time to think bigger. The rule is steady: +2 squares every step.",
   question:
-    "The pattern keeps growing by 2. Can you work out how many squares there will be at Step 100?",
+    "Can you skip ahead and calculate the squares for Step 20?",
   answer: 199,
   hints: [
     {

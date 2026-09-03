@@ -6,8 +6,9 @@ export const challenge: PatternChallenge = {
   id: "even-steps",
   title: "Even Steps",
   seriesPosition: 2,
+  questionIntro: "You spotted that first one easily, but let's change things up.",
   question:
-    "You found the pattern in the last one. Let’s change it up! Can you figure out how many dots there will be at Step 10?",
+    "What’s your prediction for Step 10?",
   answer: 20,
   hints: [
     {

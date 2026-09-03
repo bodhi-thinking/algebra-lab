@@ -19,7 +19,7 @@ function renderCells(step: number, cellSize: number) {
         <span
           key={index}
           aria-hidden="true"
-          className="rounded-[6px] bg-primary shadow-sm"
+          className="rounded-[14px] bg-primary shadow-sm"
           style={{ width: cellSize, height: cellSize }}
         />
       ))}
@@ -28,7 +28,7 @@ function renderCells(step: number, cellSize: number) {
 }
 
 export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
-  const stepCount = 5;
+  const stepCount = 4;
 
   return (
     <figure

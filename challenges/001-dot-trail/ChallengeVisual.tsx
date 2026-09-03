@@ -5,7 +5,7 @@ const CELL_SIZE_DESKTOP = 34;
 
 
 export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
-  const stepCount = 5;
+  const stepCount = 4;
 
   return (
     <figure
@@ -43,7 +43,7 @@ export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
                       <span
                         key={cell}
                         aria-hidden="true"
-                        className="rounded-[6px] bg-primary shadow-sm"
+                        className="rounded-[14px] bg-primary shadow-sm"
                         style={{
                           width: CELL_SIZE_MOBILE,
                           height: CELL_SIZE_MOBILE,
