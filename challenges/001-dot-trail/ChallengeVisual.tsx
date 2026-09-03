@@ -1,7 +1,7 @@
 import type { ChallengeVisualProps } from "@/lib/challenge-types";
 
 const CELL_SIZE_MOBILE = 30;
-const CELL_SIZE_DESKTOP = 34;
+const CELL_SIZE_DESKTOP = 32;
 
 
 export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {

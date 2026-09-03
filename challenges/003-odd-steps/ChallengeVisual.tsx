@@ -1,7 +1,7 @@
 import type { ChallengeVisualProps } from "@/lib/challenge-types";
 
-const CELL_SIZE_MOBILE = 34;
-const CELL_SIZE_DESKTOP = 36;
+const CELL_SIZE_MOBILE = 30;
+const CELL_SIZE_DESKTOP = 32;
 
 const STEP_COLORS = [
   { main: "#F5B82E", center: "#D99600" },
