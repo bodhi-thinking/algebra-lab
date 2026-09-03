@@ -52,7 +52,7 @@ export type BaseChallenge = {
   title: string;
   seriesPosition: number;
   question: string;
-  questionIntro: string;
+  questionIntro?: string;
   answer: number;
   hints: Hint[];
   correctFeedback: string;
