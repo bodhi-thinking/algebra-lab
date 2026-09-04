@@ -130,7 +130,7 @@ export default function ChallengeCard({
 
       {/* Row 3: question */}
       <div className="px-4 pt-4 sm:px-5 md:px-6 md:pt-5">
-        <p className="max-w-none font-display text-lg leading-snug text-ink sm:text-xl">
+        <p className="max-w-none font-display text-md leading-snug text-ink sm:text-xl">
           {challenge.questionIntro && (
   <>
     <span>{challenge.questionIntro}</span>
