@@ -6,8 +6,9 @@ export const challenge: PatternChallenge = {
   id: "square-halved",
   title: "Half the Square",
   seriesPosition: 6,
+  questionIntro:"Something strange is hiding inside the square numbers. We know squares are the sum of odds, but look at the final staircase. (BTW, it’s the sum of the __ numbers)",
   question:
-    "Look at the final sequence. If the pattern continues, how many squares will there be at Step 10?",
+    "If the staircase pattern continues, how many blocks will be there in Step 10?",
   answer: 55,
   hints: [
     {
@@ -28,7 +29,7 @@ export const challenge: PatternChallenge = {
     { label: "Growing pattern", tone: "green" },
   ],
   correctFeedback: "Yes. The 10th number in the final sequence is 55.",
-  followUpPrompt: "What do you notice about how much is added each time?",
+  followUpPrompt: "Notice the surprising connection: if you clone Step 4 and flip it upside down, the two halves lock together to make a 4x5 rectangle (20 blocks).",
   visual: ChallengeVisual,
   enabledRepresentations: {
     numberLine: true,
