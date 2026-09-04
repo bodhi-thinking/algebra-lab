@@ -1,7 +1,7 @@
 import type { ChallengeVisualProps } from "@/lib/challenge-types";
 
-const CELL_SIZE_MOBILE = 30;
-const CELL_SIZE_DESKTOP = 32;
+const CELL_SIZE_MOBILE = 26;
+const CELL_SIZE_DESKTOP = 30;
 
 
 function renderCells(step: number, cellSize: number) {
@@ -63,7 +63,7 @@ export default function ChallengeVisual({ challenge }: ChallengeVisualProps) {
           })}
         </div>
 
-        <div className="hidden items-start justify-center gap-6 sm:flex">
+        <div className="hidden items-start justify-center gap-10 sm:flex">
           {Array.from({ length: stepCount }, (_, index) => {
             const step = index + 1;
 

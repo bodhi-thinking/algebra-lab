@@ -21,14 +21,21 @@ export default function EquationPanel({ allowAdd }: { allowAdd: boolean }) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs text-ink-faint">Add or duplicate equations to compare relationships.</p>
-        <span className="shrink-0 font-mono text-[11px] text-ink-faint">{equations.length}/3</span>
+        <p className="text-xs text-ink-faint">
+          Add or duplicate equations to compare relationships.
+        </p>
+        <span className="shrink-0 font-mono text-[11px] text-ink-faint">
+          {equations.length}/3
+        </span>
       </div>
 
       {equations.map((eq) => {
         const c = colorFor(eq.label);
         const isActive = eq.id === activeEquationId;
-        const degree = Math.max(equationDegree(eq), eq.editableDegree) as 1 | 2 | 3;
+        const degree = Math.max(
+          equationDegree(eq),
+          eq.editableDegree
+        ) as 1 | 2 | 3;
 
         return (
           <div
@@ -114,7 +121,10 @@ export default function EquationPanel({ allowAdd }: { allowAdd: boolean }) {
                     duplicateEquation(eq.id);
                   }}
                   className="rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors hover:bg-line-soft"
-                  style={{ borderColor: `${c.stroke}55`, color: c.stroke }}
+                  style={{
+                    borderColor: `${c.stroke}55`,
+                    color: c.stroke,
+                  }}
                   aria-label={`Duplicate equation ${eq.label}`}
                 >
                   Duplicate
@@ -161,13 +171,32 @@ function CoefficientInput({
   onChange: (value: number) => void;
   ariaLabel: string;
 }) {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+
+    // Allow temporary editing states such as "", "-", "0."
+    if (raw === "" || raw === "-" || /^-?\d*\.?\d{0,3}$/.test(raw)) {
+      // Do not commit incomplete values to the store.
+      if (raw === "" || raw === "-") return;
+
+      // A trailing decimal is still an editing state.
+      if (raw.endsWith(".")) return;
+
+      const parsed = Number(raw);
+
+      if (Number.isFinite(parsed)) {
+        onChange(parsed);
+      }
+    }
+  };
+
   return (
     <input
-      type="number"
+      type="text"
       inputMode="decimal"
       value={value}
       onClick={(e: MouseEvent) => e.stopPropagation()}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.target.value))}
+      onChange={handleChange}
       className="w-11 min-w-0 rounded-lg border border-line bg-paper px-1 py-1 text-center text-sm text-ink focus:outline-none focus:ring-2 focus:ring-chalk sm:w-12 sm:text-sm"
       aria-label={ariaLabel}
     />

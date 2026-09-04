@@ -7,7 +7,7 @@ export const challenge: PatternChallenge = {
   title: "The Odd Difference",
   seriesPosition: 5,
   questionIntro:
-    "Just to let the math sink in. Notice the surprising connection: 100 - 81 = 19, exactly the 10th odd number.",
+    "Just to let the math sink in.. Notice the surprising connection: 100 - 81 = 19, exactly the 10th odd number.Similarly, 64 - 49 = 15 - 8th odd number. ",
   question:
      "Can you use this rule to predict the difference between the 20th and 19th square numbers without calculating the squares?",
   answer: 39,

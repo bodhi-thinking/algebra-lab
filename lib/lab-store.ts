@@ -63,14 +63,27 @@ function boundedInteger(value: number, fallback: number): number {
   return clampInteger(value, -MAX_TERM_VALUE, MAX_TERM_VALUE, fallback);
 }
 
+/* Only equation coefficients can contain decimals. */
+function boundedCoefficient(value: number, fallback: number): number {
+  if (!Number.isFinite(value)) return fallback;
+
+  const bounded = Math.max(
+    -MAX_TERM_VALUE,
+    Math.min(MAX_TERM_VALUE, value)
+  );
+
+  return Math.round(bounded * 1000) / 1000;
+}
+
 function safeEquation(eq: Equation): Equation {
   return {
     ...eq,
-    cubic: boundedInteger(eq.cubic ?? 0, 0),
-    quadratic: boundedInteger(eq.quadratic ?? 0, 0),
-    editableDegree: (eq.editableDegree ?? (eq.cubic ? 3 : eq.quadratic ? 2 : 1)) as 1 | 2 | 3,
-    coefficient: boundedInteger(eq.coefficient, 0),
-    constant: boundedInteger(eq.constant, 0),
+    cubic: boundedCoefficient(eq.cubic ?? 0, 0),
+    quadratic: boundedCoefficient(eq.quadratic ?? 0, 0),
+    editableDegree: (eq.editableDegree ??
+      (eq.cubic ? 3 : eq.quadratic ? 2 : 1)) as 1 | 2 | 3,
+    coefficient: boundedCoefficient(eq.coefficient, 0),
+    constant: boundedCoefficient(eq.constant, 0),
     visible: Boolean(eq.visible),
   };
 }
@@ -87,18 +100,27 @@ function safeDivision(value: number, fallback: number): number {
   return clampInteger(value, MIN_DIVISION, MAX_DIVISION, fallback);
 }
 
-function safeRange(min: number, max: number, fallbackMin: number, fallbackMax: number) {
+function safeRange(
+  min: number,
+  max: number,
+  fallbackMin: number,
+  fallbackMax: number
+) {
   const nextMin = Math.max(
     MIN_RANGE_VALUE,
     Math.min(MAX_RANGE_VALUE, finiteNumber(min, fallbackMin))
   );
+
   const nextMax = Math.max(
     MIN_RANGE_VALUE,
     Math.min(MAX_RANGE_VALUE, finiteNumber(max, fallbackMax))
   );
 
   if (nextMax <= nextMin) {
-    return { min: nextMin, max: Math.min(MAX_RANGE_VALUE, nextMin + 1) };
+    return {
+      min: nextMin,
+      max: Math.min(MAX_RANGE_VALUE, nextMin + 1),
+    };
   }
 
   return {
@@ -132,16 +154,19 @@ function cloneInitialState(initialState: InitialState): InitialState {
   const safeEquations = equations.length ? equations : [fallback];
 
   if (!visibleEquations(safeEquations).length) {
-    safeEquations[0] = { ...safeEquations[0], visible: true };
+    safeEquations[0] = {
+      ...safeEquations[0],
+      visible: true,
+    };
   }
 
   const requestedActive = safeEquations.find(
     (equation) => equation.id === initialState.activeEquationId
   );
-  const activeEquation =
-    requestedActive?.visible
-      ? requestedActive
-      : firstVisibleOrFirst(safeEquations);
+
+  const activeEquation = requestedActive?.visible
+    ? requestedActive
+    : firstVisibleOrFirst(safeEquations);
 
   const inputStart = clampInteger(
     initialState.inputStart,
@@ -172,6 +197,7 @@ function cloneInitialState(initialState: InitialState): InitialState {
   );
 
   const lastInput = inputStart + inputCount;
+
   const selectedInput =
     initialState.selectedInput === null ||
     !Number.isFinite(initialState.selectedInput)
@@ -190,9 +216,15 @@ function cloneInitialState(initialState: InitialState): InitialState {
     inputCount,
     selectedInput,
     numberLineRange,
-    numberLineDivision: safeDivision(initialState.numberLineDivision ?? 1, 1),
+    numberLineDivision: safeDivision(
+      initialState.numberLineDivision ?? 1,
+      1
+    ),
     graphXRange,
-    graphXDivision: safeDivision(initialState.graphXDivision ?? 1, 1),
+    graphXDivision: safeDivision(
+      initialState.graphXDivision ?? 1,
+      1
+    ),
   };
 }
 
@@ -220,14 +252,19 @@ export const useLabStore = create<LabStore>((set) => ({
   setActiveEquation: (id) =>
     set((state) => {
       const equation = state.equations.find((eq) => eq.id === id);
-      return equation?.visible ? { activeEquationId: id } : state;
+      return equation?.visible
+        ? { activeEquationId: id }
+        : state;
     }),
 
   setCubic: (id, value) =>
     set((state) => ({
       equations: state.equations.map((eq) =>
         eq.id === id
-          ? { ...eq, cubic: boundedInteger(value, eq.cubic) }
+          ? {
+              ...eq,
+              cubic: boundedCoefficient(value, eq.cubic),
+            }
           : eq
       ),
     })),
@@ -236,7 +273,10 @@ export const useLabStore = create<LabStore>((set) => ({
     set((state) => ({
       equations: state.equations.map((eq) =>
         eq.id === id
-          ? { ...eq, quadratic: boundedInteger(value, eq.quadratic) }
+          ? {
+              ...eq,
+              quadratic: boundedCoefficient(value, eq.quadratic),
+            }
           : eq
       ),
     })),
@@ -245,7 +285,13 @@ export const useLabStore = create<LabStore>((set) => ({
     set((state) => ({
       equations: state.equations.map((eq) =>
         eq.id === id
-          ? { ...eq, coefficient: boundedInteger(value, eq.coefficient) }
+          ? {
+              ...eq,
+              coefficient: boundedCoefficient(
+                value,
+                eq.coefficient
+              ),
+            }
           : eq
       ),
     })),
@@ -254,7 +300,10 @@ export const useLabStore = create<LabStore>((set) => ({
     set((state) => ({
       equations: state.equations.map((eq) =>
         eq.id === id
-          ? { ...eq, constant: boundedInteger(value, eq.constant) }
+          ? {
+              ...eq,
+              constant: boundedCoefficient(value, eq.constant),
+            }
           : eq
       ),
     })),
@@ -267,6 +316,7 @@ export const useLabStore = create<LabStore>((set) => ({
         INPUT_START_MAX,
         state.inputStart
       );
+
       const lastInput = nextStart + state.inputCount;
 
       return {
@@ -279,7 +329,10 @@ export const useLabStore = create<LabStore>((set) => ({
             : null,
         graphXRange: {
           min: Math.max(nextStart, state.graphXRange.min),
-          max: Math.max(nextStart + 1, state.graphXRange.max),
+          max: Math.max(
+            nextStart + 1,
+            state.graphXRange.max
+          ),
         },
       };
     }),
@@ -292,6 +345,7 @@ export const useLabStore = create<LabStore>((set) => ({
         MAX_INPUT_COUNT,
         state.inputCount
       );
+
       const lastInput = state.inputStart + next;
 
       return {
@@ -328,12 +382,16 @@ export const useLabStore = create<LabStore>((set) => ({
         state.numberLineRange.min,
         state.numberLineRange.max
       );
+
       return { numberLineRange: range };
     }),
 
   setNumberLineDivision: (value) =>
     set((state) => ({
-      numberLineDivision: safeDivision(value, state.numberLineDivision),
+      numberLineDivision: safeDivision(
+        value,
+        state.numberLineDivision
+      ),
     })),
 
   setGraphXRange: (min, max) =>
@@ -348,20 +406,31 @@ export const useLabStore = create<LabStore>((set) => ({
 
   setGraphXDivision: (value) =>
     set((state) => ({
-      graphXDivision: safeDivision(value, state.graphXDivision),
+      graphXDivision: safeDivision(
+        value,
+        state.graphXDivision
+      ),
     })),
 
   toggleVisibility: (id) =>
     set((state) => {
-      const equation = state.equations.find((eq) => eq.id === id);
+      const equation = state.equations.find(
+        (eq) => eq.id === id
+      );
+
       if (!equation) return state;
 
-      if (equation.visible && visibleEquations(state.equations).length === 1) {
+      if (
+        equation.visible &&
+        visibleEquations(state.equations).length === 1
+      ) {
         return state;
       }
 
       const equations = state.equations.map((eq) =>
-        eq.id === id ? { ...eq, visible: !eq.visible } : eq
+        eq.id === id
+          ? { ...eq, visible: !eq.visible }
+          : eq
       );
 
       const active = state.equations.find(
@@ -371,7 +440,8 @@ export const useLabStore = create<LabStore>((set) => ({
       if (active?.id === id && equation.visible) {
         return {
           equations,
-          activeEquationId: firstVisibleOrFirst(equations).id,
+          activeEquationId:
+            firstVisibleOrFirst(equations).id,
         };
       }
 
@@ -380,18 +450,25 @@ export const useLabStore = create<LabStore>((set) => ({
 
   addEquation: () =>
     set((state) => {
-      if (state.equations.length >= MAX_EQUATIONS) return state;
+      if (state.equations.length >= MAX_EQUATIONS) {
+        return state;
+      }
 
       const label = EQUATION_LABELS.find(
         (candidate) =>
-          !state.equations.some((eq) => eq.label === candidate)
+          !state.equations.some(
+            (eq) => eq.label === candidate
+          )
       );
+
       if (!label) return state;
 
       const active = state.equations.find(
         (eq) => eq.id === state.activeEquationId
       );
+
       const id = makeEquationId(label);
+
       const equation: Equation = {
         id,
         label,
@@ -413,18 +490,27 @@ export const useLabStore = create<LabStore>((set) => ({
 
   duplicateEquation: (id) =>
     set((state) => {
-      if (state.equations.length >= MAX_EQUATIONS) return state;
+      if (state.equations.length >= MAX_EQUATIONS) {
+        return state;
+      }
 
-      const source = state.equations.find((eq) => eq.id === id);
+      const source = state.equations.find(
+        (eq) => eq.id === id
+      );
+
       if (!source) return state;
 
       const label = EQUATION_LABELS.find(
         (candidate) =>
-          !state.equations.some((eq) => eq.label === candidate)
+          !state.equations.some(
+            (eq) => eq.label === candidate
+          )
       );
+
       if (!label) return state;
 
       const newId = makeEquationId(label);
+
       const duplicate: Equation = {
         ...source,
         id: newId,
@@ -442,11 +528,15 @@ export const useLabStore = create<LabStore>((set) => ({
     set((state) => {
       if (state.equations.length <= 1) return state;
 
-      const equations = state.equations.filter((eq) => eq.id !== id);
+      const equations = state.equations.filter(
+        (eq) => eq.id !== id
+      );
+
       if (!equations.length) return state;
 
       const activeStillExists = equations.some(
-        (eq) => eq.id === state.activeEquationId && eq.visible
+        (eq) =>
+          eq.id === state.activeEquationId && eq.visible
       );
 
       return {
