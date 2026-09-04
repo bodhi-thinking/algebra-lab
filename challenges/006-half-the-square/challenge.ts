@@ -4,7 +4,7 @@ import type { PatternChallenge } from "@/lib/challenge-types";
 export const challenge: PatternChallenge = {
   challengeType: "pattern",
   id: "square-halved",
-  title: "Half the Square",
+  title: "Climbing up the stairs!",
   seriesPosition: 6,
   questionIntro:"Something strange is hiding inside the square numbers. We know squares are the sum of odds, but look at the final staircase. (BTW, it’s the sum of the __ numbers)",
   question:
