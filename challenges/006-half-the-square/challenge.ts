@@ -46,6 +46,7 @@ export const challenge: PatternChallenge = {
         outputVariable: "y",
         cubic: 0,
         quadratic: 0.5,
+        editableDegree: 2,
         coefficient: 0.5,
         constant: 0,
         visible: true,
