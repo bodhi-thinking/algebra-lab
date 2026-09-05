@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChangeEvent, KeyboardEvent } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { equationDegree, sequenceValues, valueAt } from "@/lib/challenge-types";
 import { colorFor } from "@/lib/colors";
 import { useLabStore } from "@/lib/lab-store";
@@ -11,6 +11,83 @@ const HEIGHT = 330;
 const PAD = 44;
 const MAX_TICKS = 24;
 const CURVE_SAMPLES = 120;
+
+function DraftNumberInput({
+  value,
+  onChange,
+  min,
+  max,
+  ariaLabel,
+  className,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  ariaLabel: string;
+  className: string;
+}) {
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
+  const commit = () => {
+    if (draft.trim() === "") {
+      setDraft(String(value));
+      return;
+    }
+
+    const parsed = Number(draft);
+    if (!Number.isFinite(parsed)) {
+      setDraft(String(value));
+      return;
+    }
+
+    const clamped =
+      min !== undefined && max !== undefined
+        ? Math.max(min, Math.min(max, parsed))
+        : min !== undefined
+          ? Math.max(min, parsed)
+          : max !== undefined
+            ? Math.min(max, parsed)
+            : parsed;
+
+    onChange(clamped);
+    setDraft(String(clamped));
+  };
+
+  return (
+    <input
+      type="number"
+      value={draft}
+      min={min}
+      max={max}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        const raw = e.target.value;
+        setDraft(raw);
+
+        // Keep the field editable while the learner is typing.
+        // In particular, do not turn an empty string into 0.
+        if (raw.trim() === "") return;
+
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed)) return;
+
+        onChange(parsed);
+      }}
+      onBlur={commit}
+      onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          e.currentTarget.blur();
+        }
+      }}
+      className={className}
+      aria-label={ariaLabel}
+    />
+  );
+}
 
 export default function Graph() {
   const equations = useLabStore((state) => state.equations);
@@ -310,36 +387,27 @@ export default function Graph() {
 
       <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-ink-faint">
         <span>Visible x range</span>
-        <input
-          type="number"
+        <DraftNumberInput
           value={graphXRange.min}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setGraphXRange(Number(e.target.value), graphXRange.max)
-          }
+          onChange={(value) => setGraphXRange(value, graphXRange.max)}
+          ariaLabel="Graph x minimum"
           className="w-16 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
-          aria-label="Graph x minimum"
         />
         <span>to</span>
-        <input
-          type="number"
+        <DraftNumberInput
           value={graphXRange.max}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setGraphXRange(graphXRange.min, Number(e.target.value))
-          }
+          onChange={(value) => setGraphXRange(graphXRange.min, value)}
+          ariaLabel="Graph x maximum"
           className="w-16 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
-          aria-label="Graph x maximum"
         />
         <span>Divisions</span>
-        <input
-          type="number"
+        <DraftNumberInput
+          value={graphXDivision}
           min={1}
           max={50}
-          value={graphXDivision}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setGraphXDivision(Number(e.target.value))
-          }
+          onChange={setGraphXDivision}
+          ariaLabel="Graph x divisions"
           className="w-14 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
-          aria-label="Graph x divisions"
         />
       </div>
     </div>

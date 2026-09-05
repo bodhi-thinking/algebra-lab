@@ -437,43 +437,111 @@ export default function NumberLine() {
       <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-ink-faint">
         <span>Visible range</span>
 
-        <input
-          type="number"
+        <DraftNumberInput
           value={range.min}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setRange(Number(e.target.value), range.max)
-          }
+          onChange={(value) => setRange(value, range.max)}
+          ariaLabel="Number line minimum"
           className="w-16 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
-          aria-label="Number line minimum"
         />
 
         <span>to</span>
 
-        <input
-          type="number"
+        <DraftNumberInput
           value={range.max}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setRange(range.min, Number(e.target.value))
-          }
+          onChange={(value) => setRange(range.min, value)}
+          ariaLabel="Number line maximum"
           className="w-16 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
-          aria-label="Number line maximum"
         />
 
         <span>Divisions</span>
 
-        <input
-          type="number"
+        <DraftNumberInput
+          value={division}
           min={1}
           max={50}
-          value={division}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setDivision(Number(e.target.value))
-          }
+          onChange={setDivision}
+          ariaLabel="Number line divisions"
           className="w-14 rounded-lg border border-line bg-paper px-1.5 py-0.5 font-mono text-xs text-ink"
-          aria-label="Number line divisions"
         />
       </div>
     </div>
+  );
+}
+
+function DraftNumberInput({
+  value,
+  onChange,
+  min,
+  max,
+  ariaLabel,
+  className,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  ariaLabel: string;
+  className: string;
+}) {
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
+  const commit = () => {
+    if (draft.trim() === "") {
+      setDraft(String(value));
+      return;
+    }
+
+    const parsed = Number(draft);
+    if (!Number.isFinite(parsed)) {
+      setDraft(String(value));
+      return;
+    }
+
+    const clamped =
+      min !== undefined && max !== undefined
+        ? Math.max(min, Math.min(max, parsed))
+        : min !== undefined
+          ? Math.max(min, parsed)
+          : max !== undefined
+            ? Math.min(max, parsed)
+            : parsed;
+
+    onChange(clamped);
+    setDraft(String(clamped));
+  };
+
+  return (
+    <input
+      type="number"
+      value={draft}
+      min={min}
+      max={max}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        const raw = e.target.value;
+        setDraft(raw);
+
+        // Keep the field editable while the learner is typing.
+        // In particular, do not turn an empty string into 0.
+        if (raw.trim() === "") return;
+
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed)) return;
+
+        onChange(parsed);
+      }}
+      onBlur={commit}
+      onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          e.currentTarget.blur();
+        }
+      }}
+      className={className}
+      aria-label={ariaLabel}
+    />
   );
 }
 
@@ -495,6 +563,36 @@ function NumberField({
   const c = colorLabel
     ? colorFor(colorLabel)
     : undefined;
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
+  const commit = () => {
+    if (draft.trim() === "") {
+      setDraft(String(value));
+      return;
+    }
+
+    const parsed = Number(draft);
+    if (!Number.isFinite(parsed)) {
+      setDraft(String(value));
+      return;
+    }
+
+    const clamped =
+      min !== undefined && max !== undefined
+        ? Math.max(min, Math.min(max, parsed))
+        : min !== undefined
+          ? Math.max(min, parsed)
+          : max !== undefined
+            ? Math.min(max, parsed)
+            : parsed;
+
+    onChange(clamped);
+    setDraft(String(clamped));
+  };
 
   return (
     <label className="flex flex-col gap-1">
@@ -504,12 +602,27 @@ function NumberField({
 
       <input
         type="number"
-        value={value}
+        value={draft}
         min={min}
         max={max}
-        onChange={(
-          e: ChangeEvent<HTMLInputElement>
-        ) => onChange(Number(e.target.value))}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          const raw = e.target.value;
+          setDraft(raw);
+
+          // Keep the field editable while the learner is typing.
+          if (raw.trim() === "") return;
+
+          const parsed = Number(raw);
+          if (!Number.isFinite(parsed)) return;
+
+          onChange(parsed);
+        }}
+        onBlur={commit}
+        onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+          if (e.key === "Enter") {
+            e.currentTarget.blur();
+          }
+        }}
         className={`w-24 rounded-lg border bg-paper px-2 py-1.5 font-mono text-sm text-ink focus:outline-none focus:ring-2 focus:ring-chalk ${
           c ? c.ring : "border-line"
         }`}
