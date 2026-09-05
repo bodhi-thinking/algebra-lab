@@ -174,7 +174,7 @@ export default function RepresentationGrid({
     <section aria-label="Algebra Lab representations">
       <div className="mb-5">
         <h2 className="font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-          Play with the Rule
+          Think Beyond Numbers
         </h2>
 
         <p className="mt-1 text-sm text-ink-soft sm:text-base">

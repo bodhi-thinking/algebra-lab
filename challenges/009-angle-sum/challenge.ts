@@ -6,8 +6,8 @@ export const challenge: PatternChallenge = {
   id: "angle-sum",
   title: "How Is the Angle Sum Growing?",
   seriesPosition: 9,
-  questionIntro: "Polygons have a hidden pattern. Look at how their angle sums change.",
-  question: "What is the sum of the interior angles of an octagon?",
+  questionIntro: "Polygons have a hidden pattern. Look closely at the angle sums as the shapes grow: Every time a new side is added, the internal space expands by the exact same mathematical rhythm.",
+  question: "If this constant growth continues, what is the sum of the interior angles of an 8-sided octagon?",
   answer: 1080,
   hints: [
     { id: "h1", text: "Look at the angle sums for the triangle, quadrilateral, pentagon, and so on." },
@@ -21,10 +21,10 @@ export const challenge: PatternChallenge = {
   correctFeedback: "Yes. The interior-angle sum of an octagon is 1080°.",
   followUpPrompt: "Now look inside the polygons. Can you find a relationship between the number of sides and the number of triangles?",
   visual: ChallengeVisual,
-  enabledRepresentations: { numberLine: true, tiles: false, graph: true, equation: false },
+  enabledRepresentations: { numberLine: true, tiles: false, graph: true, equation: true },
   allowAddEquation: false,
   initialState: {
-    equations: [{ id: "angle-sum", label: "Angle sum", variable: "x", outputVariable: "y", cubic: 0, quadratic: 0, editableDegree: 1, coefficient: 180, constant: -360, visible: true }],
+    equations: [{ id: "angle-sum", label: "A", variable: "x", outputVariable: "y", cubic: 0, quadratic: 0, editableDegree: 1, coefficient: 180, constant: -360, visible: true }],
     activeEquationId: "angle-sum",
     inputStart: 3,
     inputCount: 6,

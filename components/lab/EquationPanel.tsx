@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { ChangeEvent, MouseEvent } from "react";
 import { equationDegree } from "@/lib/challenge-types";
 import { useLabStore } from "@/lib/lab-store";
@@ -25,7 +26,7 @@ export default function EquationPanel({ allowAdd }: { allowAdd: boolean }) {
           Add or duplicate equations to compare relationships.
         </p>
         <span className="shrink-0 font-mono text-[11px] text-ink-faint">
-          {equations.length}/3
+          {equations.length}/6
         </span>
       </div>
 
@@ -113,7 +114,7 @@ export default function EquationPanel({ allowAdd }: { allowAdd: boolean }) {
                 {eq.visible ? "Hide" : "Show"}
               </button>
 
-              {allowAdd && equations.length < 3 && (
+              {allowAdd && equations.length < 6 && (
                 <button
                   type="button"
                   onClick={(e: MouseEvent) => {
@@ -149,7 +150,7 @@ export default function EquationPanel({ allowAdd }: { allowAdd: boolean }) {
         );
       })}
 
-      {allowAdd && equations.length < 3 && (
+      {allowAdd && equations.length < 6 && (
         <button
           type="button"
           onClick={addEquation}
@@ -171,32 +172,73 @@ function CoefficientInput({
   onChange: (value: number) => void;
   ariaLabel: string;
 }) {
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
 
-    // Allow temporary editing states such as "", "-", "0."
-    if (raw === "" || raw === "-" || /^-?\d*\.?\d{0,3}$/.test(raw)) {
-      // Do not commit incomplete values to the store.
-      if (raw === "" || raw === "-") return;
+    // Allow temporary editing states while the user types.
+    // These are kept locally and are not sent to the store.
+    const isValidDraft =
+      /^-?(?:\d+(?:\.\d{0,3})?|\.\d{0,3})?$/.test(raw);
 
-      // A trailing decimal is still an editing state.
-      if (raw.endsWith(".")) return;
+    if (!isValidDraft) return;
 
-      const parsed = Number(raw);
+    setDraft(raw);
 
-      if (Number.isFinite(parsed)) {
-        onChange(parsed);
-      }
+    // Empty / incomplete values remain local editing states.
+    if (
+      raw === "" ||
+      raw === "-" ||
+      raw === "." ||
+      raw === "-."
+    ) {
+      return;
     }
+
+    const parsed = Number(raw);
+
+    if (Number.isFinite(parsed)) {
+      onChange(parsed);
+    }
+  };
+
+  const handleBlur = () => {
+    // If the user leaves the field in an incomplete state,
+    // restore the last valid value.
+    if (
+      draft === "" ||
+      draft === "-" ||
+      draft === "." ||
+      draft === "-."
+    ) {
+      setDraft(String(value));
+      return;
+    }
+
+    const parsed = Number(draft);
+
+    if (!Number.isFinite(parsed)) {
+      setDraft(String(value));
+      return;
+    }
+
+    onChange(parsed);
+    setDraft(String(parsed));
   };
 
   return (
     <input
       type="text"
       inputMode="decimal"
-      value={value}
+      value={draft}
       onClick={(e: MouseEvent) => e.stopPropagation()}
       onChange={handleChange}
+      onBlur={handleBlur}
       className="w-11 min-w-0 rounded-lg border border-line bg-paper px-1 py-1 text-center text-sm text-ink focus:outline-none focus:ring-2 focus:ring-chalk sm:w-12 sm:text-sm"
       aria-label={ariaLabel}
     />

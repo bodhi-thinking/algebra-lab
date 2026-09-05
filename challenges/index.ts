@@ -8,9 +8,10 @@ import { challenge as halfTheSquare } from "@/challenges/006-half-the-square/cha
 import { challenge as twoPatterns } from "@/challenges/007-two-patterns/challenge";
 import { challenge as growingGap } from "@/challenges/008-growing-gap/challenge";
 import { challenge as angleSum } from "@/challenges/009-angle-sum/challenge";
+import { challenge as sidesTriangles } from "@/challenges/010-sides-and-triangles/challenge";
 
 /** Planned size of the introductory challenge series. */
 export const CHALLENGE_SERIES_TOTAL = 10;
 
 /** Registered challenges available in the current build. */
-export const challenges: Challenge[] = [dotTrail, evenSteps, oddSteps, buildSquares, oddDifferences, halfTheSquare, twoPatterns, growingGap, angleSum, ];
+export const challenges: Challenge[] = [dotTrail, evenSteps, oddSteps, buildSquares, oddDifferences, halfTheSquare, twoPatterns, growingGap, angleSum, sidesTriangles, ];

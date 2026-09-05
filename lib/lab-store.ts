@@ -3,7 +3,7 @@ import type { Equation, InitialState } from "@/lib/challenge-types";
 
 const MIN_INPUT_COUNT = 1;
 const MAX_INPUT_COUNT = 100;
-const MAX_EQUATIONS = 3;
+const MAX_EQUATIONS = 6;
 const MAX_TERM_VALUE = 100;
 const MAX_RANGE_SPAN = 200;
 const MIN_RANGE_VALUE = -1000;
@@ -13,7 +13,7 @@ const INPUT_START_MAX = 100;
 const MIN_DIVISION = 1;
 const MAX_DIVISION = 50;
 
-const EQUATION_LABELS = ["A", "B", "C"] as const;
+const EQUATION_LABELS = ["A", "B", "C", "D", "E", "F"] as const;
 
 type LabStore = {
   equations: Equation[];
